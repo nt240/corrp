@@ -15,7 +15,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install Rust
         uses: actions-rs/toolchain@v1
@@ -36,7 +36,7 @@ jobs:
         run: cargo build --release --target ${{ matrix.target }}
 
       - name: Upload binaries
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: corrp-${{ matrix.target }}
           path: target/${{ matrix.target }}/release/
@@ -47,22 +47,22 @@ jobs:
     needs: build
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Download built binaries
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: corrp-x86_64-unknown-linux-gnu
           path: release-binaries/linux
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: corrp-x86_64-apple-darwin
           path: release-binaries/macos-intel
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: corrp-aarch64-apple-darwin
           path: release-binaries/macos-arm
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: corrp-x86_64-pc-windows-msvc
           path: release-binaries/windows
