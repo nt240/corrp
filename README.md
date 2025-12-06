@@ -19,25 +19,25 @@ Linux x86_64 (musl) 静的リンクバイナリを提供しており、Rust 環�
 ### 1. GitHub Releases からダウンロード
 
 ```bash
-wget https://github.com/<ユーザー名>/corrp/releases/latest/download/corrp-linux
+wget https://github.com/nt240/corrp/releases/latest/download/corrp
 ```
 
 ### 2. 実行権限を付与
 
 ```bash
-chmod +x corrp-linux
+chmod +x corrp
 ```
 
 ### 3. 実行
 
 ```bash
-./corrp-linux --r -0.5 --n 30
+./corrp --r -0.5 --n 30
 ```
 
 出力例:
 
 ```
-t= -2.987, p=0.0054
+t=-3.0550504633038935, p=0.0048999336670687565
 ```
 
 ---
@@ -45,15 +45,15 @@ t= -2.987, p=0.0054
 ## 🚀 使い方
 
 ```bash
-./corrp-linux --r <相関係数 r> --n <サンプルサイズ n>
+./corrp --r <相関係数 r> --n <サンプルサイズ n>
 ```
 
 例:
 
 ```bash
-./corrp-linux --r 0.5 --n 30
+./corrp --r 0.5 --n 30
 # 出力例
-# t=3.090, p=0.0043
+# t=-3.0550504633038935, p=0.0048999336670687565
 ```
 
 * `r` は -1.0 から 1.0 の値
