@@ -1,0 +1,86 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'   # v1.0.0 のようなタグを push したときに実行
+
+jobs:
+  build:
+    name: Build Rust binaries
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target: [x86_64-unknown-linux-gnu, x86_64-apple-darwin, aarch64-apple-darwin, x86_64-pc-windows-msvc]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: ${{ matrix.target }}
+          override: true
+
+      - name: Add target (musl for Linux)
+        if: matrix.target == 'x86_64-unknown-linux-gnu'
+        run: rustup target add x86_64-unknown-linux-gnu
+
+      - name: Install musl tools (Linux static)
+        if: matrix.target == 'x86_64-unknown-linux-gnu'
+        run: sudo apt-get update && sudo apt-get install -y musl-tools
+
+      - name: Build
+        run: cargo build --release --target ${{ matrix.target }}
+
+      - name: Upload binaries
+        uses: actions/upload-artifact@v3
+        with:
+          name: corrp-${{ matrix.target }}
+          path: target/${{ matrix.target }}/release/
+  
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Download built binaries
+        uses: actions/download-artifact@v3
+        with:
+          name: corrp-x86_64-unknown-linux-gnu
+          path: release-binaries/linux
+      - uses: actions/download-artifact@v3
+        with:
+          name: corrp-x86_64-apple-darwin
+          path: release-binaries/macos-intel
+      - uses: actions/download-artifact@v3
+        with:
+          name: corrp-aarch64-apple-darwin
+          path: release-binaries/macos-arm
+      - uses: actions/download-artifact@v3
+        with:
+          name: corrp-x86_64-pc-windows-msvc
+          path: release-binaries/windows
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload release assets
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            release-binaries/linux/release/corrp
+            release-binaries/macos-intel/release/corrp
+            release-binaries/macos-arm/release/corrp
+            release-binaries/windows/release/corrp.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
