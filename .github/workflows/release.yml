@@ -48,9 +48,6 @@ jobs:
           name: corrp-linux
           path: release-binaries
 
-      - name: Setup gh CLI
-        uses: cli/gh-action@v3
-
       - name: Create GitHub Release and upload asset
         run: |
           gh release create ${{ github.ref_name }} release-binaries/corrp \
