@@ -3,7 +3,7 @@ name: Build and Release (Linux only)
 on:
   push:
     tags:
-      - 'v*'  # v1.0.0 のようなタグを push したときに実行
+      - 'v*'  # タグ push で実行
 
 jobs:
   build-linux:
@@ -48,16 +48,13 @@ jobs:
           name: corrp-linux
           path: release-binaries
 
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ github.ref_name }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup gh CLI
+        uses: cli/gh-action@v3
 
-      - name: Upload Linux release asset
-        uses: softprops/action-gh-release@v1
-        with:
-          files: release-binaries/corrp
+      - name: Create GitHub Release and upload asset
+        run: |
+          gh release create ${{ github.ref_name }} release-binaries/corrp \
+            --title "Release ${{ github.ref_name }}" \
+            --notes "Linux static binary of corrp CLI"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
